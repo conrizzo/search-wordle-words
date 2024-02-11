@@ -9,15 +9,15 @@ useHead({
   meta: [
     {
       name: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript',
-      content: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript',     
+      content: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript',
     }
   ],
   link: [
-  {
-    rel: 'canonical',
-    href: 'https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game'
-  }
-],
+    {
+      rel: 'canonical',
+      href: 'https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game'
+    }
+  ],
   bodyAttrs: {
     class: 'test'
   },
@@ -99,18 +99,17 @@ let isRotated = ref(false);
 
 <template>
   <main style="min-height: 800px; background: rgb(255, 255, 255);">
-
-    <h1>Search assistant to help find words for the Wordle game</h1>
-    <div style="padding-left: 1.5rem;" class="center-element">
-      <p>This is a nuxt.js copy of my code from <a class="text-links"
-          href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
-          The <a class="text-links" href="https://github.com/conrizzo/search-wordle-words/tree/main/pages">GitHub</a> code is here!
-      </p>
-    </div>
     <div class="container">
       <div class="grid-box">
         <section class="text-section">
-
+          <div calss="center-element">
+            <h1>Search assistant to help find words for the Wordle game</h1>
+            <p>This is a nuxt.js copy of my code from <a class="text-links"
+                href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
+              The <a class="text-links" href="https://github.com/conrizzo/search-wordle-words/tree/main/pages">GitHub</a>
+              code is here!
+            </p>
+          </div>
           <h2>What game is this designed to help solve? &rarr;
             <a style="color: #42b983;" class="text-links"
               href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>
@@ -280,13 +279,12 @@ let isRotated = ref(false);
 h1 {
   color: #42b983;
   text-transform: capitalize;
-  font-size: 4rem;
-  padding: 5rem 1rem 5rem 1rem;
+  font-size: 3.5rem;
+  padding: 5rem 0rem 1rem 0rem;
   font-family: 'Signika', sans-serif;
   font-weight: 300;
   line-height: 1;
-  max-width: 70rem;
-  margin: 0 auto;
+  text-align: left;
 }
 
 h2 {
@@ -522,7 +520,6 @@ dialog {
 
   h1 {
     font-size: 2rem;
-    padding: 1rem;
   }
 
   h2 {
