@@ -104,17 +104,18 @@ let isRotated = ref(false);
         <section class="text-section">
           <div calss="center-element">
             <h1>Search assistant to help find words for the Wordle game</h1>
-            <p>This is a nuxt.js copy of my code from <a class="text-links"
-                href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
-              The <a class="text-links" href="https://github.com/conrizzo/search-wordle-words/tree/main/pages">GitHub</a>
-              code is here!
-            </p>
           </div>
           <h2>What game is this designed to help solve? &rarr;
             <a style="color: #42b983;" class="text-links"
               href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>
           </h2>
 
+
+          <p>This is a nuxt.js copy of my code from <a class="text-links"
+              href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
+            The <a class="text-links" href="https://github.com/conrizzo/search-wordle-words/tree/main/pages">GitHub</a>
+            code is here!
+          </p>
           <p>
             Note: This is not an official Wordle site and all game references are property of the respective
             copyright
@@ -519,7 +520,8 @@ dialog {
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
+    padding-bottom: 5rem;
   }
 
   h2 {
