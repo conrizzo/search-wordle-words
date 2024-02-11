@@ -7,13 +7,15 @@ import { allWords, processWords, lettersMatching } from './wordle'
 useHead({
   title: 'Search assistant to help find words for the Wordle game',
   meta: [
-    { name: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript', 
-    content: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript' }
+    {
+      name: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript',
+      content: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript'
+    }
   ],
   bodyAttrs: {
     class: 'test'
   },
-  script: [ { innerHTML: 'console.log(\'Hello world\')' } ]
+  script: [{ innerHTML: 'console.log(\'Hello world\')' }]
 })
 
 useSeoMeta({
@@ -90,12 +92,14 @@ let isRotated = ref(false);
 
 
 <template>
-  <h1>{{ title }}</h1>
-
   <main style="min-height: 800px; background: rgb(255, 255, 255);">
 
     <h1>Search assistant to help find words for the Wordle game</h1>
-
+    <div class="center-element">
+      <p>This is a nuxt.js copy of my code from <a class="text-links"
+          href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a>
+      </p>
+    </div>
     <div class="container">
       <div class="grid-box">
         <section class="text-section">
@@ -199,11 +203,11 @@ let isRotated = ref(false);
       <span style="color: rgb(18,18,18);">Words Allowed:<b>{{ processedWords.length }}</b></span>
     </div>
     <div class="letter-output-grid-box">
-      
+
       <div class="center-element" v-for="(word, index) in processedWords" :key="index">
         {{ word.toUpperCase() }}
       </div>
-      
+
     </div>
 
   </main>
