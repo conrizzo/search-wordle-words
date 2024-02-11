@@ -95,7 +95,7 @@ let isRotated = ref(false);
   <main style="min-height: 800px; background: rgb(255, 255, 255);">
 
     <h1>Search assistant to help find words for the Wordle game</h1>
-    <div class="center-element">
+    <div style="padding-left: 1.5rem;" class="center-element">
       <p>This is a nuxt.js copy of my code from <a class="text-links"
           href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a>
       </p>

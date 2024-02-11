@@ -1,5 +1,13 @@
 # Search Wordle Words with TypeScript/JavaScript in Nuxt.js
 
+nuxt js version running at https://search-wordle-words.netlify.app/
+
+original version running at https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game
+
+This is a Search assistant to help find words for the Wordle game
+
+---- default files below for reference
+
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Setup
@@ -73,5 +81,4 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
-# search-wordle-words
-Search assistant to help find words for the Wordle game
+
