@@ -9,13 +9,19 @@ useHead({
   meta: [
     {
       name: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript',
-      content: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript'
+      content: 'A project to help win the game Wordle by searching strings with JavaScript/TypeScript',     
     }
   ],
+  link: [
+  {
+    rel: 'canonical',
+    href: 'https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game'
+  }
+],
   bodyAttrs: {
     class: 'test'
   },
-  script: [{ innerHTML: 'console.log(\'Hello world\')' }]
+  // script: [{ innerHTML: 'console.log(\'Hello world\')' }]
 })
 
 useSeoMeta({
