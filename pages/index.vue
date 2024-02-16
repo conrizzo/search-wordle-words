@@ -47,6 +47,7 @@ let duplicateLettersMessage = ref('');
 const outputSuccessMessage = ref("");
 
 const inputLength = computed(() => `${userInput.value.length}/${maxWordLength}`);
+const secondInputLength = computed(() => `${userInputInWordSomewhere.value.length}/${maxWordLength}`);
 
 const exactLetterMatches = () => {
   processedWords.value = lettersMatching(userInput.value, userInputExcludeLetters.value);
@@ -164,7 +165,8 @@ let isRotated = ref(false);
 
           <transition name="slide">
             <div v-if="viewInstructions" class="instructions">
-              <h3>1st Input</h3>
+
+              <h3 style="padding-top: 1rem;">1st Input</h3>
               <p>
                 Typing letters in the <b>Include</b> field will
                 search for those letters in any position in a word.
@@ -181,6 +183,7 @@ let isRotated = ref(false);
                 and 5th letter
                 "<b>M</b>".
               </p>
+
               <h3>2nd Input</h3>
               <p>
                 The "<b>Letter in word somewhere</b>" field is a search modification.
@@ -200,6 +203,7 @@ let isRotated = ref(false);
                 at these specific
                 positions, so remove the words with letters at these positions!
               </p>
+
               <h3>3rd Input</h3>
               <p>
                 The "<b>Exclude</b>" field will exclude any words with the letters entered.
@@ -215,16 +219,16 @@ let isRotated = ref(false);
           <span style="color:#fff;">{{ outputSuccessMessage }}</span>
           <div class="submission-area">
 
-            <label class="include-label-text">Include ({{ inputLength }}):</label>
-            <input class="input-field-style" placeholder="Include letters" type="text" v-model="userInput"
+            <label for="userInput1" class="include-label-text">Include ({{ inputLength }}):</label>
+            <input id="userInput1" class="input-field-style" placeholder="Include letters" type="text" v-model="userInput"
               maxlength="5" />
 
-            <label class="include-label-text">Letter in word somewhere (Optional):</label>
-            <input class="input-field-style" style="background-color: rgb(255, 255, 214);"
+            <label for="userInput2"  class="include-label-text">Letter in word somewhere (Optional) ({{ secondInputLength }}):</label>
+            <input id="userInput2" class="input-field-style" style="background-color: rgb(255, 255, 214);"
               placeholder="Letter in word somewhere" type="text" v-model="userInputInWordSomewhere" maxlength="5" />
 
-            <label class="include-label-text">Exclude (Optional):</label>
-            <input class="input-field-exclude-letters-style" style="background-color: rgb(245, 245, 245);"
+            <label for="userInput3" class="include-label-text">Exclude (Optional):</label>
+            <input id="userInput3" class="input-field-exclude-letters-style" style="background-color: rgb(245, 245, 245);"
               placeholder="Exclude letters" type="text" v-model="userInputExcludeLetters" maxlength="18" />
             <!--
         <label>
