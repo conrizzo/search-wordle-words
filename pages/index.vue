@@ -141,7 +141,9 @@ let isRotated = ref(false);
               href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>
           </h2>
 
-          <p>This is a nuxt.js copy of my code from <a class="text-links"
+          <p>
+            This is a simple search tool to help find words for the Wordle game. The game is a word puzzle where you have to guess the word.
+            <br>This is a Nuxt.js copy of my code from <a class="text-links"
               href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
             The <a class="text-links" href="https://github.com/conrizzo/search-wordle-words/tree/main/pages">GitHub</a>
             code is here!
@@ -269,7 +271,7 @@ let isRotated = ref(false);
 
     </div>
 
-    <div class="center-element">he
+    <div class="center-element">
       <p>
         Note: This is not an official Wordle site and all game references are property of the respective copyright
         owners.
