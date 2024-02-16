@@ -40,6 +40,7 @@ const processedWords = ref([]);
 const maxWordLength = 5;
 let userInput = ref('');
 let userInputExcludeLetters = ref('');
+let userInputInWordSomewhere = ref('');
 let invalidInput = ref(false);
 let viewInstructions = ref(false);
 let duplicateLettersMessage = ref('');
@@ -73,10 +74,10 @@ const checkForDuplicateLetters = () => {
   return false;
 };
 
-// MAIN FUNCTION FOR THIS
+// MAIN FUNCTION OF THIS APPLICATION USING TYPESCRIPT FUNCTIONS IN ADDITIONAL FILE wordle.ts
 const processInputWord = () => {
   // verify a user isn't trying to exclude letters that are also included
-  if (checkForDuplicateLetters() === true) {
+  if (checkForDuplicateLetters(userInput.value) === true) {
     return;
   }
   getOutputSuccessMessage(); // submission successful message
@@ -85,11 +86,40 @@ const processInputWord = () => {
   if (notLetter.test(userInput.value) && !checkboxValue.value) {
     // An error message can optionally be inserted here with invalidInput.value = true;       
     processedWords.value = lettersMatching(userInput.value, userInputExcludeLetters.value);
+
+    // check if the yellow 2nd input has anything other than letters in it
+    if (notLetter.test(userInputInWordSomewhere.value) && userInputInWordSomewhere.value.length > 0) {
+      const filteredWords = processedWords.value;
+      processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);
+      if (checkForDuplicateLetters(userInputInWordSomewhere.value) === true) {
+        return;
+      }
+      return;
+    }
+    // if it is only letters we just search words that MUST include these letters as a secondary search
+    if (userInputInWordSomewhere.value.length > 0) {
+      const filteredWords = processedWords.value;
+      processedWords.value = processWords(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords);
+      if (checkForDuplicateLetters(userInputInWordSomewhere.value) === true) {
+        return;
+      }
+      return;
+    }
     return;
+  } else {
+
+
+    processedWords.value = processWords(userInput.value, userInputExcludeLetters.value);
+
+    const filteredWords = processedWords.value;
+    if (notLetter.test(userInputInWordSomewhere.value)) {
+      processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);
+    } else {
+      processedWords.value = processWords(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords);
+    }
+
   }
-  // This will check if any letter is in the word and positions don't matter - could be if-else not sure
-  // what is more readable
-  processedWords.value = processWords(userInput.value, userInputExcludeLetters.value);
+
 };
 
 let isRotated = ref(false);
@@ -110,17 +140,10 @@ let isRotated = ref(false);
               href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>
           </h2>
 
-
           <p>This is a nuxt.js copy of my code from <a class="text-links"
               href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
             The <a class="text-links" href="https://github.com/conrizzo/search-wordle-words/tree/main/pages">GitHub</a>
             code is here!
-          </p>
-          <p>
-            Note: This is not an official Wordle site and all game references are property of the respective
-            copyright
-            owners.
-            This is just a project to search strings with a dataset of words using JavaScript/TypeScript.
           </p>
 
           <button class="instruction-button" type="button"
@@ -141,6 +164,7 @@ let isRotated = ref(false);
 
           <transition name="slide">
             <div v-if="viewInstructions" class="instructions">
+              <h3>1st Input</h3>
               <p>
                 Typing letters in the <b>Include</b> field will
                 search for those letters in any position in a word.
@@ -151,18 +175,38 @@ let isRotated = ref(false);
                 letter between the letters.
               </p>
               <p>
-                <b>For example:</b> Type "_r_a_" to search for words with the 2nd letter
-                <b>r</b> and 4th letter <b>a</b>.
-                Typing "##eam" will search for words with the 3rd letter "<b>e</b>", 4th letter "<b>a</b>",
+                <b>For example:</b> Type "<b>_R_A_</b>" to search for words with the 2nd letter
+                <b>R</b> and 4th letter <b>A</b>.
+                Typing "<b>##EAM</b>" will search for words with the 3rd letter "<b>E</b>", 4th letter "<b>A</b>",
                 and 5th letter
-                "<b>m</b>".
+                "<b>M</b>".
+              </p>
+              <h3>2nd Input</h3>
+              <p>
+                The "<b>Letter in word somewhere</b>" field is a search modification.
+                It can be used by itself to exclude specific letters at specific positions, or as a
+                secondary filter done after the <b>Include</b> field is evaluated. Typing "<b>AAAA#</b>" here will exclude
+                all words with <b>A</b> in the 1st-4th positions.
+                If exact positions
+                are used in the <b>Include</b> field with "B#R##" and
+                <b>Letter in word somewhere</b> has the letter <b>C</b> entered, then the result will only be words
+                with first letter B, third letter R, and the letter C somewhere in the word.
               </p>
               <p>
-                The "<b>Exclude</b>" field is optional and will exclude any words with the letters entered.
-                For example, if input in this field is "ab"
-                then all words with the letter "a" or "b" will be excluded.
+                As a reminder, if any character other than a letter is used in the "<b>Letter in word somewhere</b>" field
+                then
+                all words with letters in these specific positions within the 5 letter word will be removed!
+                Doing this tells the search we are saying each of the letters are in the word, but were incorrect guesses
+                at these specific
+                positions, so remove the words with letters at these positions!
               </p>
-
+              <h3>3rd Input</h3>
+              <p>
+                The "<b>Exclude</b>" field will exclude any words with the letters entered.
+                For example, if input in this field is "AB"
+                then all words with the letter "A" or "B" will be excluded. This says these letters are
+                not in the word at all.
+              </p>
             </div>
           </transition>
         </section>
@@ -175,9 +219,13 @@ let isRotated = ref(false);
             <input class="input-field-style" placeholder="Include letters" type="text" v-model="userInput"
               maxlength="5" />
 
-            <label class="include-label-text">Exclude (optional):</label>
-            <input class="input-field-exclude-letters-style" placeholder="Exclude letters" type="text"
-              v-model="userInputExcludeLetters" maxlength="18" />
+            <label class="include-label-text">Letter in word somewhere (Optional):</label>
+            <input class="input-field-style" style="background-color: rgb(255, 255, 214);"
+              placeholder="Letter in word somewhere" type="text" v-model="userInputInWordSomewhere" maxlength="5" />
+
+            <label class="include-label-text">Exclude (Optional):</label>
+            <input class="input-field-exclude-letters-style" style="background-color: rgb(245, 245, 245);"
+              placeholder="Exclude letters" type="text" v-model="userInputExcludeLetters" maxlength="18" />
             <!--
         <label>
           <span class="character-indice-font">Match Indices</span>
@@ -217,11 +265,22 @@ let isRotated = ref(false);
 
     </div>
 
+    <div class="center-element">he
+      <p>
+        Note: This is not an official Wordle site and all game references are property of the respective copyright
+        owners.
+        This is just a project to search strings with a dataset of words using JavaScript/TypeScript.
+      </p>
+    </div>
   </main>
 </template>
 
 
 <style scoped>
+h3 {
+  text-align: center;
+}
+
 .center-element {
   justify-content: center;
   display: flex;
@@ -236,7 +295,7 @@ let isRotated = ref(false);
 .slide-enter-active,
 .slide-leave-active {
   transition: all 0.5s;
-  max-height: 340px;
+  max-height: 700px;
 }
 
 .slide-enter,
@@ -281,7 +340,7 @@ h1 {
   color: #42b983;
   text-transform: capitalize;
   font-size: 3.5rem;
-  padding: 5rem 0rem 1rem 0rem;
+  padding: 0rem 0rem 3rem 0rem;
   font-family: 'Signika', sans-serif;
   font-weight: 300;
   line-height: 1;
@@ -324,7 +383,7 @@ p {
   align-items: flex-start;
   flex-direction: column;
   background: rgb(255, 255, 255);
-  padding: 2rem 1.5rem 2rem 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 1.5rem;
   margin: 0 auto;
   max-width: 60rem;
   border-radius: 1rem;

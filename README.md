@@ -9,9 +9,7 @@ and search functions written in TypeScript.
 
 Original version I made in Vue.js is running at https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game
 
-
-
----- default files below for reference
+- - - - -
 
 Make sure to install nuxt.js to run this
 
