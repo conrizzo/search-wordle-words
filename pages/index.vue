@@ -55,6 +55,11 @@ const getOutputSuccessMessage = () => {
   outputSuccessMessage.value = "Submission successful! Scroll down to see the results!";
 }
 
+ // only allow letters in 3rd input field
+watch(userInputExcludeLetters, (newValue: string) => {
+      userInputExcludeLetters.value = newValue.replace(/[^a-zA-Z]/g, '');
+});
+
 // ERROR CHECKING FUNCTION
 const checkForDuplicateLetters = (whichInput: string) => {
   const inputLetters = whichInput.split('');
@@ -64,10 +69,11 @@ const checkForDuplicateLetters = (whichInput: string) => {
 
   // check if the 2nd input has any letters that are also in the 3rd input
   const secondAndThirdDuplicateLetters = secondInputExclude.filter(letter => excludeLetters.includes(letter));
-  if (secondAndThirdDuplicateLetters.length > 0) {
-    invalidInput.value = true;
-    return true;
-  }
+      if (secondAndThirdDuplicateLetters.length > 0) {       
+        invalidInput.value = true;
+        secondAndThirdDuplicateLetters.length = 1; //sets to 1 to activate the error message
+        //return true;
+      }
 
   // check if the 1st input has any letters that are also in the 2nd or 3rd input
   const duplicates = inputLetters.filter((letter, index) => {
@@ -79,12 +85,9 @@ const checkForDuplicateLetters = (whichInput: string) => {
     if (excludeLetters.includes(letter)) {
       return true;
     }
-    // only run the inner if statement if input has non-letters
 
-    if (notLetter.test(userInputInWordSomewhere.value)) {
-      //console.log(userInputInWordSomewhere.value);
-      //console.log(secondInputExclude[index]);
-      //console.log(letter);
+    // only run the inner if statement if input has non-letters
+    if (notLetter.test(userInputInWordSomewhere.value)) {     
       // Check if the same letter is at the same position in secondInputExclude
       if (secondInputExclude[index] === letter) {
         return true;
@@ -101,6 +104,7 @@ const checkForDuplicateLetters = (whichInput: string) => {
       duplicateLettersMessage.value = `The error letters are ${duplicates.join(', ').toUpperCase()}`;
     }
     duplicates.length = 0; // read more about this - clears all array instances and works but should understand this single line better
+    secondAndThirdDuplicateLetters.length = 0; //sets to 0 for default value after error message
     invalidInput.value = true; // make error message
     return true;
   }
@@ -245,8 +249,8 @@ const processInputWord = () => {
           <div class="submission-area">
 
             <label for="userInput1" class="include-label-text">Include ({{ inputLength }}):</label>
-            <input id="userInput1" class="input-field-style" placeholder="Include letters" type="text" v-model="userInput"
-              maxlength="5" />
+            <input id="userInput1" class="input-field-style" style="background-color: rgb(217, 255, 220);"
+              placeholder="Include letters" type="text" v-model="userInput" maxlength="5" />
 
             <label for="userInput2" class="include-label-text">Letter in word somewhere (Optional) ({{ secondInputLength
             }}):</label>
