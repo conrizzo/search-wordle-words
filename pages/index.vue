@@ -55,77 +55,93 @@ const getOutputSuccessMessage = () => {
   outputSuccessMessage.value = "Submission successful! Scroll down to see the results!";
 }
 
+// ERROR CHECKING FUNCTION
 const checkForDuplicateLetters = (whichInput: string) => {
+  const inputLetters = whichInput.split('');
+  const secondInputExclude = userInputInWordSomewhere.value.split('')
+  const excludeLetters = userInputExcludeLetters.value.split('')
 
-const inputLetters = whichInput.split('');   
-const excludeLetters = userInputExcludeLetters.value.split('')    
-const secondInputExclude = userInputInWordSomewhere.value.split('')    
 
-const duplicates = inputLetters.filter((letter, index) => {
-  // don't check if it's not a letter
-  if (!/^[a-zA-Z]$/.test(letter)) {
-    return false;
-  }
-  // Check if the letter exists in excludeLetters
-  if (excludeLetters.includes(letter)) {
+  // check if the 2nd input has any letters that are also in the 3rd input
+  const secondAndThirdDuplicateLetters = secondInputExclude.filter(letter => excludeLetters.includes(letter));
+  if (secondAndThirdDuplicateLetters.length > 0) {
+    invalidInput.value = true;
     return true;
   }
-  // Check if the same letter is at the same position in secondInputExclude
-  if (secondInputExclude[index] === letter) {
+
+  // check if the 1st input has any letters that are also in the 2nd or 3rd input
+  const duplicates = inputLetters.filter((letter, index) => {
+    // don't check if it's not a letter
+    if (!/^[a-zA-Z]$/.test(letter)) {
+      return false;
+    }
+    // Check if the letter exists in excludeLetters
+    if (excludeLetters.includes(letter)) {
+      return true;
+    }
+    // only run the inner if statement if input has non-letters
+
+    if (notLetter.test(userInputInWordSomewhere.value)) {
+      //console.log(userInputInWordSomewhere.value);
+      //console.log(secondInputExclude[index]);
+      //console.log(letter);
+      // Check if the same letter is at the same position in secondInputExclude
+      if (secondInputExclude[index] === letter) {
+        return true;
+      }
+    }
+    return false;
+  });
+
+  if (duplicates.length > 0 || secondAndThirdDuplicateLetters.length > 0) {
+    // singular/plural message
+    if (duplicates.length === 1) {
+      duplicateLettersMessage.value = `The error letter is ${duplicates[0].toUpperCase()}`;
+    } else {
+      duplicateLettersMessage.value = `The error letters are ${duplicates.join(', ').toUpperCase()}`;
+    }
+    duplicates.length = 0; // read more about this - clears all array instances and works but should understand this single line better
+    invalidInput.value = true; // make error message
     return true;
   }
   return false;
-});
-
-if (duplicates.length > 0) {
-  // singular/plural message
-  if (duplicates.length === 1) {
-    duplicateLettersMessage.value = `The error letter is ${duplicates[0].toUpperCase()}`;
-  } else {
-    duplicateLettersMessage.value = `The error letters are ${duplicates.join(', ').toUpperCase()}`;
-  }
-  duplicates.length = 0; // read more about this - clears all array instances and works but should understand this single line better
-  invalidInput.value = true; // make error message
-  return true;
-}
-return false;
 };
 
 // MAIN FUNCTION OF THIS APPLICATION USING TYPESCRIPT FUNCTIONS IN ADDITIONAL FILE wordle.ts
 // USING checkForDuplicateLetters function to check for errors
 const processInputWord = () => {
-// guard statement to verify a user isn't trying to exclude letters that are also included
-if (checkForDuplicateLetters(userInput.value) === true) { 
-  return;
-}
+  // guard statement to verify a user isn't trying to exclude letters that are also included
+  if (checkForDuplicateLetters(userInput.value) === true) {
+    return;
+  }
 
-invalidInput.value = false; // Remove the error message on the next submission if error is fixed!
-getOutputSuccessMessage(); // submission successful message
-// if any input is not a letter this says find exact character position matches
-if (notLetter.test(userInput.value) && !checkboxValue.value) {             
-  processedWords.value = lettersMatching(userInput.value, userInputExcludeLetters.value);
-  // 2nd input
-  if (notLetter.test(userInputInWordSomewhere.value) && userInputInWordSomewhere.value.length > 0) {
-    const filteredWords = processedWords.value;
-    processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);          
+  invalidInput.value = false; // Remove the error message on the next submission if error is fixed!
+  getOutputSuccessMessage(); // submission successful message
+  // if any input is not a letter this says find exact character position matches
+  if (notLetter.test(userInput.value) && !checkboxValue.value) {
+    processedWords.value = lettersMatching(userInput.value, userInputExcludeLetters.value);
+    // 2nd input
+    if (notLetter.test(userInputInWordSomewhere.value) && userInputInWordSomewhere.value.length > 0) {
+      const filteredWords = processedWords.value;
+      processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);
+      return;
+    }
+    // if it is only letters we just search words that MUST include these letters as a secondary search
+    if (userInputInWordSomewhere.value.length > 0) {
+      const filteredWords = processedWords.value;
+      processedWords.value = processWords(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords);
+      return;
+    }
     return;
-  }
-  // if it is only letters we just search words that MUST include these letters as a secondary search
-  if (userInputInWordSomewhere.value.length > 0) {
+  } else { // this else is for when the user is not trying to find exact character position matches
+    processedWords.value = processWords(userInput.value, userInputExcludeLetters.value);
     const filteredWords = processedWords.value;
-    processedWords.value = processWords(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords);          
-    return;
+    if (notLetter.test(userInputInWordSomewhere.value)) {
+      processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);
+    } else {
+      processedWords.value = processWords(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords);
+    }
   }
-  return;
-} else { // this else is for when the user is not trying to find exact character position matches
-  processedWords.value = processWords(userInput.value, userInputExcludeLetters.value);
-  const filteredWords = processedWords.value;
-  if (notLetter.test(userInputInWordSomewhere.value)) {
-    processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);
-  } else {
-    processedWords.value = processWords(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords);
-  }
-}
 };
 
 
@@ -148,7 +164,8 @@ if (notLetter.test(userInput.value) && !checkboxValue.value) {
           </h2>
 
           <p>
-            This is a simple search tool to help find words for the Wordle game. The game is a word puzzle where you have to guess the word.
+            This is a simple search tool to help find words for the Wordle game. The game is a word puzzle where you have
+            to guess the word.
             <br>This is a Nuxt.js copy of my code from <a class="text-links"
               href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
             The <a class="text-links" href="https://github.com/conrizzo/search-wordle-words/tree/main/pages">GitHub</a>
@@ -231,7 +248,8 @@ if (notLetter.test(userInput.value) && !checkboxValue.value) {
             <input id="userInput1" class="input-field-style" placeholder="Include letters" type="text" v-model="userInput"
               maxlength="5" />
 
-            <label for="userInput2"  class="include-label-text">Letter in word somewhere (Optional) ({{ secondInputLength }}):</label>
+            <label for="userInput2" class="include-label-text">Letter in word somewhere (Optional) ({{ secondInputLength
+            }}):</label>
             <input id="userInput2" class="input-field-style" style="background-color: rgb(255, 255, 214);"
               placeholder="Letter in word somewhere" type="text" v-model="userInputInWordSomewhere" maxlength="5" />
 
