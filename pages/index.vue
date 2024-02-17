@@ -55,9 +55,9 @@ const getOutputSuccessMessage = () => {
   outputSuccessMessage.value = "Submission successful! Scroll down to see the results!";
 }
 
- // only allow letters in 3rd input field
+// only allow letters in 3rd input field
 watch(userInputExcludeLetters, (newValue: string) => {
-      userInputExcludeLetters.value = newValue.replace(/[^a-zA-Z]/g, '');
+  userInputExcludeLetters.value = newValue.replace(/[^a-zA-Z]/g, '');
 });
 
 // ERROR CHECKING FUNCTION
@@ -66,14 +66,11 @@ const checkForDuplicateLetters = (whichInput: string) => {
   const secondInputExclude = userInputInWordSomewhere.value.split('')
   const excludeLetters = userInputExcludeLetters.value.split('')
 
-
   // check if the 2nd input has any letters that are also in the 3rd input
   const secondAndThirdDuplicateLetters = secondInputExclude.filter(letter => excludeLetters.includes(letter));
-      if (secondAndThirdDuplicateLetters.length > 0) {       
-        invalidInput.value = true;
-        secondAndThirdDuplicateLetters.length = 1; //sets to 1 to activate the error message
-        //return true;
-      }
+  if (secondAndThirdDuplicateLetters.length > 0) {
+    invalidInput.value = true;
+  }
 
   // check if the 1st input has any letters that are also in the 2nd or 3rd input
   const duplicates = inputLetters.filter((letter, index) => {
@@ -83,28 +80,39 @@ const checkForDuplicateLetters = (whichInput: string) => {
     }
     // Check if the letter exists in excludeLetters
     if (excludeLetters.includes(letter)) {
+
       return true;
     }
 
-    // only run the inner if statement if input has non-letters
-    if (notLetter.test(userInputInWordSomewhere.value)) {     
+    // only run the inner if statement if input has non-letters        
+    if (notLetter.test(userInputInWordSomewhere.value)) {
       // Check if the same letter is at the same position in secondInputExclude
       if (secondInputExclude[index] === letter) {
+
         return true;
       }
     }
     return false;
   });
 
+  //console.log('inputLetters:', inputLetters);
+  //console.log('excludeLetters:', excludeLetters);
+  //console.log('duplicates:', duplicates);
+  //console.log('duplicateLettersMessage.value:', duplicateLettersMessage.value);
+
   if (duplicates.length > 0 || secondAndThirdDuplicateLetters.length > 0) {
     // singular/plural message
     if (duplicates.length === 1) {
       duplicateLettersMessage.value = `The error letter is ${duplicates[0].toUpperCase()}`;
-    } else {
+    }
+    else if (secondAndThirdDuplicateLetters.length > 0) {
+      duplicateLettersMessage.value = `The error letter is ${secondAndThirdDuplicateLetters[0].toUpperCase()}`;
+    }
+    else {
       duplicateLettersMessage.value = `The error letters are ${duplicates.join(', ').toUpperCase()}`;
     }
     duplicates.length = 0; // read more about this - clears all array instances and works but should understand this single line better
-    secondAndThirdDuplicateLetters.length = 0; //sets to 0 for default value after error message
+    secondAndThirdDuplicateLetters.length = 0; // sets back to default value after error message
     invalidInput.value = true; // make error message
     return true;
   }
