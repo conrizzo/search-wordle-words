@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { ref, computed } from 'vue'
-import { allWords, processWords, lettersMatching } from './wordle'
+import { processWords, lettersMatching } from './wordle'
 
 // SEO and page info
 useHead({
@@ -43,7 +43,7 @@ let userInputExcludeLetters = ref('');
 let userInputInWordSomewhere = ref('');
 let invalidInput = ref(false);
 let viewInstructions = ref(false);
-let duplicateLettersMessage = ref('');
+let duplicateLettersErrorMessage = ref('');
 const outputSuccessMessage = ref("");
 let isRotated = ref(false); // menu styling variable
 
@@ -80,7 +80,6 @@ const checkForDuplicateLetters = (whichInput: string) => {
     }
     // Check if the letter exists in excludeLetters
     if (excludeLetters.includes(letter)) {
-
       return true;
     }
 
@@ -88,29 +87,34 @@ const checkForDuplicateLetters = (whichInput: string) => {
     if (notLetter.test(userInputInWordSomewhere.value)) {
       // Check if the same letter is at the same position in secondInputExclude
       if (secondInputExclude[index] === letter) {
-
         return true;
       }
     }
     return false;
   });
 
-  //console.log('inputLetters:', inputLetters);
-  //console.log('excludeLetters:', excludeLetters);
-  //console.log('duplicates:', duplicates);
-  //console.log('duplicateLettersMessage.value:', duplicateLettersMessage.value);
-
   if (duplicates.length > 0 || secondAndThirdDuplicateLetters.length > 0) {
-    // singular/plural message
-    if (duplicates.length === 1) {
-      duplicateLettersMessage.value = `The error letter is ${duplicates[0].toUpperCase()}`;
+
+    // singular/plural message of both input fields
+    if (secondAndThirdDuplicateLetters.length > 0 && duplicates.length > 0) {
+      duplicateLettersErrorMessage.value = `The error letters are <b>${duplicates.join(', ').toUpperCase()}</b> in the first input field, 
+      and <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b> in the 2nd input field!`;
     }
-    else if (secondAndThirdDuplicateLetters.length > 0) {
-      duplicateLettersMessage.value = `The error letter is ${secondAndThirdDuplicateLetters[0].toUpperCase()}`;
+    // singular
+    else if (duplicates.length === 1) {
+      duplicateLettersErrorMessage.value = `The error letter is <b>${duplicates[0].toUpperCase()}</b>`;
     }
-    else {
-      duplicateLettersMessage.value = `The error letters are ${duplicates.join(', ').toUpperCase()}`;
+    else if (secondAndThirdDuplicateLetters.length === 1) {
+      duplicateLettersErrorMessage.value = `The error letter is <b>${secondAndThirdDuplicateLetters[0].toUpperCase()}</b>`;
     }
+    // plural
+    else if (secondAndThirdDuplicateLetters.length > 1) {
+      duplicateLettersErrorMessage.value = `The error letters are <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b>`;
+    }
+    else if (duplicates.length > 1) {
+      duplicateLettersErrorMessage.value = `The error letters are <b>${duplicates.join(', ').toUpperCase()}</b>`;
+    }
+
     duplicates.length = 0; // read more about this - clears all array instances and works but should understand this single line better
     secondAndThirdDuplicateLetters.length = 0; // sets back to default value after error message
     invalidInput.value = true; // make error message
@@ -287,7 +291,7 @@ const processInputWord = () => {
               <span class="description-span" style="color: #ff5959;">Error</span>
             </div>
             <p>You are trying to include and exclude the same data!<br>
-              {{ duplicateLettersMessage }}
+              <span v-html="duplicateLettersErrorMessage"></span>
             </p>
           </dialog>
         </form>
@@ -586,7 +590,7 @@ dialog {
   z-index: 2;
   border: 3px solid #ff5959;
   margin-top: 1rem;
-  max-width: 39.5rem;
+  max-width: 39.75rem;
 }
 
 .submission-area {
