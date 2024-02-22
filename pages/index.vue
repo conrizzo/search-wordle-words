@@ -13,10 +13,11 @@ useHead({
     }
   ],
   link: [
+    /*
     {
       rel: 'canonical',
       href: 'https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game'
-    }
+    }*/
   ],
   bodyAttrs: {
     class: 'test'
@@ -97,8 +98,8 @@ const checkForDuplicateLetters = (whichInput: string) => {
 
     // singular/plural message of both input fields
     if (secondAndThirdDuplicateLetters.length > 0 && duplicates.length > 0) {
-      duplicateLettersErrorMessage.value = `The error letters are <b>${duplicates.join(', ').toUpperCase()}</b> in the first input field, 
-      and <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b> in the 2nd input field!`;
+      duplicateLettersErrorMessage.value = `The error letters are <b>${duplicates.join(', ').toUpperCase()}</b> in the first input field,
+  and <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b> in the 2nd input field!`;
     }
     // singular
     else if (duplicates.length === 1) {
@@ -130,7 +131,6 @@ const processInputWord = () => {
   if (checkForDuplicateLetters(userInput.value) === true) {
     return;
   }
-
   invalidInput.value = false; // Remove the error message on the next submission if error is fixed!
   getOutputSuccessMessage(); // submission successful message
   // if any input is not a letter this says find exact character position matches
@@ -159,10 +159,6 @@ const processInputWord = () => {
     }
   }
 };
-
-
-
-
 </script>
 
 
@@ -266,7 +262,7 @@ const processInputWord = () => {
 
             <label for="userInput2" class="include-label-text">Letter in word somewhere (Optional) ({{ secondInputLength
             }}):</label>
-            <input id="userInput2" class="input-field-style" style="background-color: rgb(255, 255, 214);"
+            <input id="userInput2" class="input-field-style" style="background-color: rgb(255, 255, 172);"
               placeholder="Letter in word somewhere" type="text" v-model="userInputInWordSomewhere" maxlength="5" />
 
             <label for="userInput3" class="include-label-text">Exclude (Optional):</label>
