@@ -63,16 +63,15 @@ watch(userInputExcludeLetters, (newValue: string) => {
 
 // ERROR CHECKING FUNCTION
 const checkForDuplicateLetters = (whichInput: string) => {
-  const inputLetters = whichInput.split('');
-  const secondInputExclude = userInputInWordSomewhere.value.split('')
-  const excludeLetters = userInputExcludeLetters.value.split('')
+  const inputLetters = whichInput.toLowerCase().split('');
+const secondInputExclude = userInputInWordSomewhere.value.toLowerCase().split('')
+const excludeLetters = userInputExcludeLetters.value.toLowerCase().split('')
 
   // check if the 2nd input has any letters that are also in the 3rd input
   const secondAndThirdDuplicateLetters = secondInputExclude.filter(letter => excludeLetters.includes(letter));
   if (secondAndThirdDuplicateLetters.length > 0) {
     invalidInput.value = true;
   }
-
   // check if the 1st input has any letters that are also in the 2nd or 3rd input
   const duplicates = inputLetters.filter((letter, index) => {
     // don't check if it's not a letter
@@ -99,7 +98,7 @@ const checkForDuplicateLetters = (whichInput: string) => {
     // singular/plural message of both input fields
     if (secondAndThirdDuplicateLetters.length > 0 && duplicates.length > 0) {
       duplicateLettersErrorMessage.value = `The error letters are <b>${duplicates.join(', ').toUpperCase()}</b> in the first input field,
-  and <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b> in the 2nd input field!`;
+      and <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b> in the 2nd input field!`;
     }
     // singular
     else if (duplicates.length === 1) {
@@ -136,10 +135,21 @@ const processInputWord = () => {
   // if any input is not a letter this says find exact character position matches
   if (notLetter.test(userInput.value) && !checkboxValue.value) {
     processedWords.value = lettersMatching(userInput.value, userInputExcludeLetters.value);
-    // 2nd input
+
+    // 2nd input field matches exact character position to remove the letter
+    // where the user guessed the letter was in the word but it was not there  
     if (notLetter.test(userInputInWordSomewhere.value) && userInputInWordSomewhere.value.length > 0) {
       const filteredWords = processedWords.value;
       processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);
+      //filteredWords = processedWords.value;
+      let cleanedStr = userInputInWordSomewhere.value.replace(/[^a-zA-Z]/g, "").toLowerCase();
+      
+      // removes all words that do not have a misguessed letter in the word!
+      let secondFilter = processedWords.value.filter(word =>
+        [...cleanedStr].every(letter => word.includes(letter))
+      );
+      processedWords.value = secondFilter;
+      
       return;
     }
     // if it is only letters we just search words that MUST include these letters as a secondary search
