@@ -44,83 +44,55 @@ let userInputExcludeLetters = ref('');
 let userInputInWordSomewhere = ref('');
 let invalidInput = ref(false);
 let viewInstructions = ref(false);
-let duplicateLettersErrorMessage = ref('');
-const outputSuccessMessage = ref("");
 let isRotated = ref(false); // menu styling variable
 
-const inputLength = computed(() => `${userInput.value.length}/${maxWordLength}`);
-const secondInputLength = computed(() => `${userInputInWordSomewhere.value.length}/${maxWordLength}`);
+let duplicateLettersErrorMessage: Ref<string> = ref('');
+const outputSuccessMessage: Ref<string> = ref("");
 
 
-const getOutputSuccessMessage = () => {
-  outputSuccessMessage.value = "Submission successful! Scroll down to see the results!";
-}
 
 // only allow letters in 3rd input field
 watch(userInputExcludeLetters, (newValue: string) => {
   userInputExcludeLetters.value = newValue.replace(/[^a-zA-Z]/g, '');
 });
 
+
+
+const inputLength = computed(() => `${userInput.value.length}/${maxWordLength}`);
+const secondInputLength = computed(() => `${userInputInWordSomewhere.value.length}/${maxWordLength}`);
+
+const getOutputSuccessMessage = () => {
+  outputSuccessMessage.value = "Submission successful! Scroll down to see the results!";
+}
+
 // ERROR CHECKING FUNCTION
 const checkForDuplicateLetters = (whichInput: string) => {
   const inputLetters = whichInput.toLowerCase().split('');
-const secondInputExclude = userInputInWordSomewhere.value.toLowerCase().split('')
-const excludeLetters = userInputExcludeLetters.value.toLowerCase().split('')
+  const secondInputLetters = userInputInWordSomewhere.value.toLowerCase().split('');
+  const excludeLetters = userInputExcludeLetters.value.toLowerCase().split('');
 
-  // check if the 2nd input has any letters that are also in the 3rd input
-  const secondAndThirdDuplicateLetters = secondInputExclude.filter(letter => excludeLetters.includes(letter));
-  if (secondAndThirdDuplicateLetters.length > 0) {
+  const secondAndThirdDuplicates = secondInputLetters.filter(letter => excludeLetters.includes(letter));
+  const firstInputDuplicates = inputLetters.filter((letter, index) =>
+    /^[a-zA-Z]$/.test(letter) && (excludeLetters.includes(letter) || secondInputLetters[index] === letter)
+  );
+
+  if (firstInputDuplicates.length > 0 || secondAndThirdDuplicates.length > 0) {
+    generateErrorMessage(firstInputDuplicates, secondAndThirdDuplicates);
     invalidInput.value = true;
-  }
-  // check if the 1st input has any letters that are also in the 2nd or 3rd input
-  const duplicates = inputLetters.filter((letter, index) => {
-    // don't check if it's not a letter
-    if (!/^[a-zA-Z]$/.test(letter)) {
-      return false;
-    }
-    // Check if the letter exists in excludeLetters
-    if (excludeLetters.includes(letter)) {
-      return true;
-    }
-
-    // only run the inner if statement if input has non-letters        
-    if (notLetter.test(userInputInWordSomewhere.value)) {
-      // Check if the same letter is at the same position in secondInputExclude
-      if (secondInputExclude[index] === letter) {
-        return true;
-      }
-    }
-    return false;
-  });
-
-  if (duplicates.length > 0 || secondAndThirdDuplicateLetters.length > 0) {
-
-    // singular/plural message of both input fields
-    if (secondAndThirdDuplicateLetters.length > 0 && duplicates.length > 0) {
-      duplicateLettersErrorMessage.value = `The error letters are <b>${duplicates.join(', ').toUpperCase()}</b> in the first input field,
-      and <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b> in the 2nd input field!`;
-    }
-    // singular
-    else if (duplicates.length === 1) {
-      duplicateLettersErrorMessage.value = `The error letter is <b>${duplicates[0].toUpperCase()}</b>`;
-    }
-    else if (secondAndThirdDuplicateLetters.length === 1) {
-      duplicateLettersErrorMessage.value = `The error letter is <b>${secondAndThirdDuplicateLetters[0].toUpperCase()}</b>`;
-    }
-    // plural
-    else if (secondAndThirdDuplicateLetters.length > 1) {
-      duplicateLettersErrorMessage.value = `The error letters are <b>${secondAndThirdDuplicateLetters.join(', ').toUpperCase()}</b>`;
-    }
-    else if (duplicates.length > 1) {
-      duplicateLettersErrorMessage.value = `The error letters are <b>${duplicates.join(', ').toUpperCase()}</b>`;
-    }
-
-    duplicates.length = 0; // read more about this - clears all array instances and works but should understand this single line better
-    secondAndThirdDuplicateLetters.length = 0; // sets back to default value after error message
-    invalidInput.value = true; // make error message
     return true;
   }
   return false;
+};
+
+const generateErrorMessage = (firstDuplicates: string[], secondDuplicates: string[]) => {
+  let messageParts = [];
+  if (firstDuplicates.length) {
+    messageParts.push(`The error letter${firstDuplicates.length > 1 ? 's are' : ' is'} <b>${firstDuplicates.join(', ').toUpperCase()}</b> in the first input field`);
+  }
+  if (secondDuplicates.length) {
+    messageParts.push(`The error letter${secondDuplicates.length > 1 ? 's are' : ' is'} <b>${secondDuplicates.join(', ').toUpperCase()}</b> in the 2nd input field`);
+  }
+  duplicateLettersErrorMessage.value = messageParts.join(', and ') + '!';
 };
 
 // MAIN FUNCTION OF THIS APPLICATION USING TYPESCRIPT FUNCTIONS IN ADDITIONAL FILE wordle.ts
@@ -143,13 +115,13 @@ const processInputWord = () => {
       processedWords.value = lettersMatching(userInputInWordSomewhere.value, userInputExcludeLetters.value, filteredWords, true);
       //filteredWords = processedWords.value;
       let cleanedStr = userInputInWordSomewhere.value.replace(/[^a-zA-Z]/g, "").toLowerCase();
-      
+
       // removes all words that do not have a misguessed letter in the word!
       let secondFilter = processedWords.value.filter(word =>
         [...cleanedStr].every(letter => word.includes(letter))
       );
       processedWords.value = secondFilter;
-      
+
       return;
     }
     // if it is only letters we just search words that MUST include these letters as a secondary search
@@ -186,7 +158,8 @@ const processInputWord = () => {
           </h2>
 
           <p>
-            This is a simple search tool to help find words for the Wordle game. The game is a word puzzle where you have
+            This is a simple search tool to help find words for the Wordle game. The game is a word puzzle where you
+            have
             to guess the word.
             <br>This is a Nuxt.js copy of my code from <a class="text-links"
               href="https://conradswebsite.com/projects/search-assistant-to-help-find-words-for-the-wordle-game">conradswebsite.com</a><br>
@@ -235,7 +208,8 @@ const processInputWord = () => {
               <p>
                 The "<b>Letter in word somewhere</b>" field is a search modification.
                 It can be used by itself to exclude specific letters at specific positions, or as a
-                secondary filter done after the <b>Include</b> field is evaluated. Typing "<b>AAAA#</b>" here will exclude
+                secondary filter done after the <b>Include</b> field is evaluated. Typing "<b>AAAA#</b>" here will
+                exclude
                 all words with <b>A</b> in the 1st-4th positions.
                 If exact positions
                 are used in the <b>Include</b> field with "B#R##" and
@@ -243,10 +217,12 @@ const processInputWord = () => {
                 with first letter B, third letter R, and the letter C somewhere in the word.
               </p>
               <p>
-                As a reminder, if any character other than a letter is used in the "<b>Letter in word somewhere</b>" field
+                As a reminder, if any character other than a letter is used in the "<b>Letter in word somewhere</b>"
+                field
                 then
                 all words with letters in these specific positions within the 5 letter word will be removed!
-                Doing this tells the search we are saying each of the letters are in the word, but were incorrect guesses
+                Doing this tells the search we are saying each of the letters are in the word, but were incorrect
+                guesses
                 at these specific
                 positions, so remove the words with letters at these positions!
               </p>
@@ -271,13 +247,14 @@ const processInputWord = () => {
               placeholder="Include letters" type="text" v-model="userInput" maxlength="5" />
 
             <label for="userInput2" class="include-label-text">Letter in word somewhere (Optional) ({{ secondInputLength
-            }}):</label>
+              }}):</label>
             <input id="userInput2" class="input-field-style" style="background-color: rgb(255, 255, 172);"
               placeholder="Letter in word somewhere" type="text" v-model="userInputInWordSomewhere" maxlength="5" />
 
             <label for="userInput3" class="include-label-text">Exclude (Optional):</label>
-            <input id="userInput3" class="input-field-exclude-letters-style" style="background-color: rgb(245, 245, 245);"
-              placeholder="Exclude letters" type="text" v-model="userInputExcludeLetters" maxlength="18" />
+            <input id="userInput3" class="input-field-exclude-letters-style"
+              style="background-color: rgb(245, 245, 245);" placeholder="Exclude letters" type="text"
+              v-model="userInputExcludeLetters" maxlength="18" />
             <!--
         <label>
           <span class="character-indice-font">Match Indices</span>
